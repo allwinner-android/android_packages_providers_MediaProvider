@@ -140,7 +140,7 @@ public class MtpService extends Service {
 
     private void updateDisabledStateLocked() {
         final boolean isCurrentUser = UserHandle.myUserId() == ActivityManager.getCurrentUser();
-        mMtpDisabled = !mUnlocked || !isCurrentUser;
+        mMtpDisabled = false;
         if (LOGD) {
             Log.d(TAG, "updating state; isCurrentUser=" + isCurrentUser + ", mMtpLocked="
                     + mMtpDisabled);
