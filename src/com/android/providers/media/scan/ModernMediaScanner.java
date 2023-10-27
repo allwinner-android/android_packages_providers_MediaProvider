@@ -527,17 +527,19 @@ public class ModernMediaScanner implements MediaScanner {
             final int[] countPerMediaType = new int[FileColumns.MEDIA_TYPE_COUNT];
             try (Cursor c = mResolver.query(mFilesUri,
                     new String[]{FileColumns._ID, FileColumns.MEDIA_TYPE, FileColumns.DATE_EXPIRES,
-                            FileColumns.IS_PENDING}, queryArgs, mSignal)) {
+                            FileColumns.IS_PENDING,MediaStore.Video.Media.TAGS}, queryArgs, mSignal)) {
                 while (c.moveToNext()) {
                     final long id = c.getLong(0);
                     if (Arrays.binarySearch(scannedIds, id) < 0) {
                         final long dateExpire = c.getLong(2);
                         final boolean isPending = c.getInt(3) == 1;
+                        final String strRecording = c.getString(4);
+                        final boolean isRecording = (strRecording != null && strRecording.equals("recording"));
                         // Don't delete the pending item which is not expired.
                         // If the scan is triggered between invoking
                         // ContentResolver#insert() and ContentResolver#openFileDescriptor(),
                         // it raises the FileNotFoundException b/166063754.
-                        if (isPending && dateExpire > System.currentTimeMillis() / 1000) {
+                        if (isPending && dateExpire > System.currentTimeMillis() / 1000 || isRecording) {
                             continue;
                         }
                         mUnknownIds.add(id);
